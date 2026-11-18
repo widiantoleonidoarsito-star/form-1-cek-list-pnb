@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aplikasi Cek List PNB Umum</title>
+    <!-- Tailwind CSS & SheetJS (xlsx) for Excel Export -->
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+</head>
+<body class="bg-gray-100 font-sans text-gray-800">
+
+    <div class="max-w-7xl mx-auto p-4 sm:p-6">
+        <!-- Header -->
+        <header class="bg-blue-700 text-white p-6 rounded-xl shadow-md mb-6 flex flex-col md:flex-row justify-between items-center">
+            <div>
+                <h1 class="text-2xl font-bold">FORM TEROBOSAN CEK LIST PNB UMUM</h1>
+                <p class="text-blue-200 text-sm mt-1">Sistem Pengisian, Rekapitulasi, dan Unduh Data Kelompok & Desa</p>
+            </div>
+            <div class="mt-4 md:mt-0 flex gap-2">
+                <button onclick="switchTab('form')" id="btn-form" class="bg-white text-blue-700 px-4 py-2 rounded-lg font-semibold shadow hover:bg-blue-50 transition">Isi Form</button>
+                <button onclick="switchTab('rekap')" id="btn-rekap" class="bg-blue-600 text-white px-4 py-2 rounded-lg font-semibold shadow hover:bg-blue-800 transition border border-blue-500">Rekapitulasi Data</button>
+            </div>
+        </header>
+
+        <!-- TAB 1: FORMULIR ISIAN -->
+        <div id="tab-form" class="bg-white rounded-xl shadow-md p-6 mb-8">
+            <h2 class="text-xl font-bold text-gray-700 border-b pb-3 mb-6">Formulir Isian Cek List Kelengkapan</h2>
+            
+            <form id="pnbForm" onsubmit="saveData(event)">
+                <!-- Identitas -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 bg-blue-50 p-4 rounded-lg mb-6 border border-blue-100">
+                    <div>
+                        <label class="block font-semibold text-sm text-gray-700 mb-1">NAMA DESA:</label>
+                        <input type="text" id="namaDesa" required class="w-full bg-white border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 outline-none" placeholder="Masukkan Nama Desa">
+                    </div>
+                    <div>
+                        <label class="block font-semibold text-sm text-gray-700 mb-1">NAMA KELOMPOK:</label>
+                        <input type="text" id="namaKelompok" required class="w-full bg-white border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 outline-none" placeholder="Masukkan Nama Kelompok">
+                    </div>
+                </div>
+
+                <!-- A. KEPENGURUSAN KELOMPOK -->
+                <div class="mb-8">
+                    <h3 class="bg-gray-800 text-white px-4 py-2 font-bold rounded-t-lg text-sm">A. KEPENGURUSAN KELOMPOK</h3>
+                    <div class="overflow-x-auto border border-gray-200 rounded-b-lg">
+                        <table class="w-full text-sm text-left">
+                            <thead class="bg-gray-100 text-gray-700 border-b">
+                                <tr>
+                                    <th class="p-3 w-12 text-center">No</th>
+                                    <th class="p-3">Uraian Kepengurusan</th>
+                                    <th class="p-3 text-center w-24">Ada (√)</th>
+                                    <th class="p-3 text-center w-24">Tidak (X)</th>
+                                    <th class="p-3">Keterangan</th>
+                                </tr>
+                            </thead>
+                            <tbody id="kepengurusan-tbody" class="divide-y divide-gray-200">
+                                <!-- Generated via JS -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- B. KEGIATAN KELOMPOK -->
+                <div class="mb-8">
+                    <h3 class="bg-gray-800 text-white px-4 py-2 font-bold rounded-t-lg text-sm">B. KEGIATAN KELOMPOK</h3>
+                    <div class="overflow-x-auto border border-gray-200 rounded-b-lg">
+                        <table class="w-full text-sm text-left">
+                            <thead class="bg-gray-100 text-gray-700 border-b">
+                                <tr>
+                                    <th class="p-3 w-12 text-center">No</th>
+                                    <th class="p-3">Uraian Kegiatan</th>
+                                    <th class="p-3 text-center w-24">Ada (√)</th>
+                                    <th class="p-3 text-center w-24">Tidak (X)</th>
+                                    <th class="p-3">Keterangan</th>
+                                </tr>
+                            </thead>
+                            <tbody id="kegiatan-tbody" class="divide-y divide-gray-200">
+                                <!-- Generated via JS -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- C. SARANA DAN PRA SARANA -->
+                <div class="mb-8">
+                    <h3 class="bg-gray-800 text-white px-4 py-2 font-bold rounded-t-lg text-sm">C. SARANA DAN PRA SARANA</h3>
+                    <div class="overflow-x-auto border border-gray-200 rounded-b-lg">
+                        <table class="w-full text-sm text-left">
+                            <thead class="bg-gray-100 text-gray-700 border-b">
+                                <tr>
+                                    <th class="p-3 w-12 text-center">No</th>
+                                    <th class="p-3">Uraian Sarana & Prasarana</th>
+                                    <th class="p-3 text-center w-24">Ada (√)</th>
+                                    <th class="p-3 text-center w-24">Tidak (X)</th>
+                                    <th class="p-3">Keterangan</th>
+                                </tr>
+                            </thead>
+                            <tbody id="sarana-tbody" class="divide-y divide-gray-200">
+                                <!-- Generated via JS -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- D. CEK LIST PROGAM IJTIHAD KEIMAMAN -->
+                <div class="mb-8">
+                    <h3 class="bg-gray-800 text-white px-4 py-2 font-bold rounded-t-lg text-sm">D. CEK LIST PROGAM IJTIHAD KEIMAMAN</h3>
+                    <div class="overflow-x-auto border border-gray-200 rounded-b-lg">
+                        <table class="w-full text-sm text-left">
+                            <thead class="bg-gray-100 text-gray-700 border-b">
+                                <tr>
+                                    <th class="p-3 w-12 text-center">No</th>
+                                    <th class="p-3">Uraian Ijtihad Keimaman</th>
+                                    <th class="p-3 text-center w-28">Lancar (√)</th>
+                                    <th class="p-3 text-center w-28">Tidak</th>
+                                    <th class="p-3">Keterangan</th>
+                                </tr>
+                            </thead>
+                            <tbody id="ijtihad-tbody" class="divide-y divide-gray-200">
+                                <!-- Generated via JS -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Submit Button -->
+                <div class="flex justify-end gap-4">
+                    <button type="submit" class="bg-green-600 hover:bg-green-700 text-white font-bold px-8 py-3 rounded-lg shadow-lg transition flex items-center gap-2">
+                        💾 Simpan Data Isian
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        <!-- TAB 2: REKAPITULASI & UNDUH -->
+        <div id="tab-rekap" class="bg-white rounded-xl shadow-md p-6 mb-8 hidden">
+            <div class="flex flex-col sm:flex-row justify-between items-center mb-6 gap-4">
+                <h2 class="text-xl font-bold text-gray-700">Rekapitulasi Data Masuk</h2>
+                <button onclick="clearData()" class="bg-red-500 hover:bg-red-600 text-white text-xs px-3 py-2 rounded-lg font-semibold transition">Hapus Semua Data</button>
+            </div>
+
+            <div class="overflow-x-auto">
+                <table class="w-full text-sm text-left border border-gray-200 rounded-lg">
+                    <thead class="bg-gray-100 text-gray-700 border-b">
+                        <tr>
+                            <th class="p-3">No</th>
+                            <th class="p-3">Desa</th>
+                            <th class="p-3">Kelompok</th>
+                            <th class="p-3">Tanggal Simpan</th>
+                            <th class="p-3 text-center">Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody id="rekap-tbody" class="divide-y divide-gray-200">
+                        <!-- Data rows -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Script Utama -->
+    <script>
+        // Data Struktur Form sesuai dengan Excel asli
+        const kepengurusanList = [
+            "1. Imam Kelompok", "2. Wakil Imam Kelompok", "3. Muballigh Kelompok", 
+            "4. Penerobos Kelompok", "5. Aghniya Kelompok", "6. KU Kelompok + Penulis KU", 
+            "7. Ketua Muda mudi Kelompok", "8. Tim Dhuafa' (ada anggota wanitanya)", 
+            "9. Tim Kematian (ada anggota wanitanya)", "10. Tim PNKB", 
+            "11. Tim Perawatan Sarana Prasarana Sabilillah"
+        ];
+
+        const kegiatanList = [
+            "1. Musyawaroh (minimal sebulan sekali)",
+            "    1.1. Musyawaroh Kelompok",
+            "    1.2. Musyawaroh keimaman kelompok",
+            "    1.3. Musyawaroh lima Unsur",
+            "    1.4. Musyawaroh para guru generus, Pelaksana Pembinaan Generus di Kelompok, ketua muda-mudi, BK kelompok",
+            "2. Membuat jadwal :",
+            "    2.1. Sholat 5 waktu beserta muadzin dan imam di Masjid Kelompok",
+            "    2.2. Khotib sholat Jum'at di Masjid Kelompok",
+            "    2.3. Penasehat habis solat Jum'at di masjid Kelompok",
+            "3. Membuat acara untuk menertibkan pembelaan jama’ah, seperti : zakat, shodaqoh dan pembelaan yang lain",
+            "3. Pengajian",
+            "    3.1. Pengajian sambung Kelompok (seminggu 2 kali)",
+            "    3.2. Pengajian Pra Remaja, Remaja dan Usia nikah (seminggu 3 kali)",
+            "    3.3. Pengajian CBR (minimal seminggu 3 kali)",
+            "    3.4. Pengajian ibu-ibu kelompok",
+            "4. Latihan ASAD (minimal sebulan sekali)",
+            "5. Menggerakkan jama’ah untuk membantu kepada sesama jama’ah yang memerlukan bantuan, seperti : jama’ah yang sakit, jama’ah duafa’, jama’ah tertimpa musibah",
+            "6. Pengoreksian keuangan (sebulan sekali)",
+            "7. Laporan Kuangan Ke Desa (4 bulan sekali)",
+            "8. Menyelasaikan permasalahan jama'ah di kelompok",
+            "9. Kegiatan yang lain yang sifatnya anjuran"
+        ];
+
+        const saranaList = [
+            "1. Masjid/mushollah", "2. Aula", "3. Kamar Tamu/Tempat Jujugan", 
+            "4. Kamar MT", "5. Perlengkapan Peramutan Jenazah", "6. Dapur", 
+            "7. Jeding Umum", "8. Sepeda Motor Tali asih"
+        ];
+
+        const ijtihadList = [
+            "KETERTIBAN LIMA BAB", "KETERTIBAN INFAQ PERSENAN", 
+            "PERATURAN 55 PERINTAH DAN 22 LARANGAN", "IJTIHAD 30 POINT", "BAB KERUKUNAN"
+        ];
+
+        // Inisialisasi Tabel saat halaman dimuat
+        document.addEventListener("DOMContentLoaded", () => {
+            renderTable('kepengurusan-tbody', kepengurusanList, 'kep');
+            renderTable('kegiatan-tbody', kegiatanList, 'keg');
+            renderTable('sarana-tbody', saranaList, 'sar');
+            renderIjtihadTable();
+            loadRekap();
+        });
+
+        function renderTable(tbodyId, list, prefix) {
+            const tbody = document.getElementById(tbodyId);
+            tbody.innerHTML = '';
+            list.forEach((item, index) => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td class="p-3 text-center text-gray-500 font-medium">${index + 1}</td>
+                    <td class="p-3 text-gray-800">${item}</td>
+                    <td class="p-3 text-center"><input type="radio" name="${prefix}_${index}" value="ADA" class="w-4 h-4 text-blue-600 focus:ring-blue-500"></td>
+                    <td class="p-3 text-center"><input type="radio" name="${prefix}_${index}" value="TIDAK" class="w-4 h-4 text-red-600 focus:ring-red-500"></td>
+                    <td class="p-3"><input type="text" name="${prefix}_ket_${index}" placeholder="Keterangan..." class="w-full text-xs border border-gray-300 rounded px-2 py-1"></td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        function renderIjtihadTable() {
+            const tbody = document.getElementById('ijtihad-tbody');
+            tbody.innerHTML = '';
+            ijtihadList.forEach((item, index) => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td class="p-3 text-center text-gray-500 font-medium">${index + 1}</td>
+                    <td class="p-3 text-gray-800">${item}</td>
+                    <td class="p-3 text-center"><input type="radio" name="ijt_${index}" value="LANCAR" class="w-4 h-4 text-blue-600 focus:ring-blue-500"></td>
+                    <td class="p-3 text-center"><input type="radio" name="ijt_${index}" value="TIDAK" class="w-4 h-4 text-red-600 focus:ring-red-500"></td>
+                    <td class="p-3"><input type="text" name="ijt_ket_${index}" placeholder="Keterangan..." class="w-full text-xs border border-gray-300 rounded px-2 py-1"></td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        function switchTab(tab) {
+            if (tab === 'form') {
+                document.getElementById('tab-form').classList.remove('hidden');
+                document.getElementById('tab-rekap').classList.add('hidden');
+                document.getElementById('btn-form').className = "bg-white text-blue-700 px-4 py-2 rounded-lg font-semibold shadow hover:bg-blue-50 transition";
+                document.getElementById('btn-rekap').className = "bg-blue-600 text-white px-4 py-2 rounded-lg font-semibold shadow hover:bg-blue-800 transition border border-blue-500";
+            } else {
+                document.getElementById('tab-form').classList.add('hidden');
+                document.getElementById('tab-rekap').classList.remove('hidden');
+                document.getElementById('btn-rekap').className = "bg-white text-blue-700 px-4 py-2 rounded-lg font-semibold shadow hover:bg-blue-50 transition";
+                document.getElementById('btn-form').className = "bg-blue-600 text-white px-4 py-2 rounded-lg font-semibold shadow hover:bg-blue-800 transition border border-blue-500";
+                loadRekap();
+            }
+        }
+
+        // Simpan Data ke LocalStorage / Database Browser
+        function saveData(e) {
+            e.preventDefault();
+            const desa = document.getElementById('namaDesa').value;
+            const kelompok = document.getElementById('namaKelompok').value;
+
+            // Kumpulkan data form
+            const formData = {
+                desa,
+                kelompok,
+                timestamp: new Date().toLocaleString('id-ID'),
+                kepengurusan: kepengurusanList.map((item, i) => ({
+                    item,
+                    status: document.querySelector(`input[name="kep_${i}"]:checked`)?.value || "",
+                    ket: document.querySelector(`input[name="kep_ket_${i}"]`).value
+                })),
+                kegiatan: kegiatanList.map((item, i) => ({
+                    item,
+                    status: document.querySelector(`input[name="keg_${i}"]:checked`)?.value || "",
+                    ket: document.querySelector(`input[name="keg_ket_${i}"]`).value
+                })),
+                sarana: saranaList.map((item, i) => ({
+                    item,
+                    status: document.querySelector(`input[name="sar_${i}"]:checked`)?.value || "",
+                    ket: document.querySelector(`input[name="sar_ket_${i}"]`).value
+                })),
+                ijtihad: ijtihadList.map((item, i) => ({
+                    item,
+                    status: document.querySelector(`input[name="ijt_${i}"]:checked`)?.value || "",
+                    ket: document.querySelector(`input[name="ijt_ket_${i}"]`).value
+                }))
+            };
+
+            let allData = JSON.parse(localStorage.getItem('pnbData') || '[]');
+            allData.push(formData);
+            localStorage.setItem('pnbData', JSON.stringify(allData));
+
+            alert("✅ Data berhasil disimpan dan masuk ke sistem rekapitulasi!");
+            document.getElementById('pnbForm').reset();
+            switchTab('rekap');
+        }
+
+        function loadRekap() {
+            const allData = JSON.parse(localStorage.getItem('pnbData') || '[]');
+            const tbody = document.getElementById('rekap-tbody');
+            tbody.innerHTML = '';
+
+            if (allData.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="5" class="p-4 text-center text-gray-500">Belum ada data yang tersimpan.</td></tr>`;
+                return;
+            }
+
+            allData.forEach((data, index) => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td class="p-3">${index + 1}</td>
+                    <td class="p-3 font-semibold">${data.desa}</td>
+                    <td class="p-3">${data.kelompok}</td>
+                    <td class="p-3 text-gray-500 text-xs">${data.timestamp}</td>
+                    <td class="p-3 text-center flex justify-center gap-2">
+                        <button onclick="downloadExcel(${index})" class="bg-blue-600 hover:bg-blue-700 text-white text-xs px-3 py-1.5 rounded font-medium shadow">📥 Unduh Excel</button>
+                        <button onclick="deleteItem(${index})" class="bg-red-100 hover:bg-red-200 text-red-600 text-xs px-3 py-1.5 rounded font-medium">Hapus</button>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        function deleteItem(index) {
+            if (confirm("Yakin ingin menghapus data ini?")) {
+                let allData = JSON.parse(localStorage.getItem('pnbData') || '[]');
+                allData.splice(index, 1);
+                localStorage.setItem('pnbData', JSON.stringify(allData));
+                loadRekap();
+            }
+        }
+
+        function clearData() {
+            if (confirm("⚠️ Hapus seluruh data tersimpan? Tindakan ini tidak dapat dibatalkan!")) {
+                localStorage.removeItem('pnbData');
+                loadRekap();
+            }
+        }
+
+        // Fitur Unduh Excel sesuai Persis Format Template Asli
+        function downloadExcel(index) {
+            const allData = JSON.parse(localStorage.getItem('pnbData') || '[]');
+            const d = allData[index];
+
+            let aoa = [
+                ["CEK LIST KELENGKAPAN KEPENGURUSAN, KEGIATAN DAN SARPRAS", "", "", "", ""],
+                ["", "DESA:", d.desa, "", ""],
+                ["KELOMPOK", "", d.kelompok, "", ""],
+                ["A", "KEPENGURUSAN KELOMPOK", "ADA", "TIDAK", "KETERANGAN"],
+                ["", "", "√", "X", ""]
+            ];
+
+            d.kepengurusan.forEach((k, idx) => {
+                aoa.push(["", `${idx + 1}. ${k.item}`, k.status === 'ADA' ? '√' : '', k.status === 'TIDAK' ? 'X' : '', k.ket]);
+            });
+
+            aoa.push(["", "", "", "", ""]);
+            aoa.push(["B", "KEGIATAN KELOMPOK", "", "", ""]);
+            
+            d.kegiatan.forEach((k, idx) => {
+                aoa.push(["", `    ${k.item}`, k.status === 'ADA' ? '√' : '', k.status === 'TIDAK' ? 'X' : '', k.ket]);
+            });
+
+            aoa.push(["", "", "", "", ""]);
+            aoa.push(["C", "SARANA DAN PRA SARANA", "", "", ""]);
+            
+            d.sarana.forEach((s, idx) => {
+                aoa.push(["", `${s.item}`, s.status === 'ADA' ? '√' : '', s.status === 'TIDAK' ? 'X' : '', s.ket]);
+            });
+
+            aoa.push(["", "", "", "", ""]);
+            aoa.push(["CEK LIST PROGAM IJTIHAD KEIMAMAN", "", "", "", ""]);
+            aoa.push(["KELOMPOK", "", "", "", ""]);
+            aoa.push(["NO", "URAIAN", "LANCAR", "TIDAK", "KETERANGAN"]);
+            
+            d.ijtihad.forEach((ij, idx) => {
+                aoa.push([idx + 1, ij.item, ij.status === 'LANCAR' ? '√' : '', ij.status === 'TIDAK' ? 'X' : '', ij.ket]);
+            });
+
+            const ws = XLSX.utils.aoa_to_sheet(aoa);
+            const wb = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(wb, ws, "Sheet1");
+            
+            // Nama File Unduhan sesuai Kelompok dan Desa
+            XLSX.writeFile(wb, `Cek_List_PNB_${d.desa}_${d.kelompok}.xlsx`.replace(/\s+/g, '_'));
+        }
+    </script>
+</body>
+</html>
